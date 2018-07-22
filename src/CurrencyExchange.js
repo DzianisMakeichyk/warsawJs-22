@@ -1,7 +1,14 @@
 export default class CurrencyExchange {
-  constructor(data) {
-    const { names, rates } = data.reduce((accum, entry) => {
-      const { code, buy, sell } = entry;
+  constructor(data, options) {
+    if (!Array.isArray(data) || data.length === 0) {
+      throw new Error('Invalid rates');
+    }
+
+    const { names, rates } = data.reduce((accum, { code, buy, sell }) => {
+
+    if (!code || buy <= 0 || sell <= 0 || buy > sell) {
+      throw new Error('Invalid currency data');
+    }
 
       accum.names.push(code);
       accum.rates[code] = { buy, sell }
@@ -9,8 +16,19 @@ export default class CurrencyExchange {
       return accum
     }, { names: [], rates: {} })
 
-    this.currencies = names
-    this.rates = rates
+    const { buyFee, sellFee } = Object.assign({
+      buyFee: 0.01,
+      sellFee: 0.01
+    }, options);
+
+    if (buyFee < 0.01 || sellFee < 0.01) {
+      throw new Error('Invalid fees');
+    }
+
+    this.buyFee = buyFee;
+    this.sellFee = sellFee;
+    this.currencies = names;
+    this.rates = rates;
   }
 
   getCurrencyList() {
@@ -19,5 +37,23 @@ export default class CurrencyExchange {
 
   getCurrencyRate(code) {
     return this.rates[code]
+  }
+
+  buy(currency, amount) {
+    const amountNum = Number(amount);
+    if (!this.rates[currency] || isNaN(amountNum) || amountNum <= 0) {
+      throw new Error('Invalid currency or amount');
+    }
+
+    return this.rates[currency].buy * amount + this.buyFee;
+  }
+
+  sell(currency, amount) {
+    const amountNum = Number(amount);
+    if (!this.rates[currency] || isNaN(amountNum) || amountNum <= 0) {
+      throw new Error('Invalid currency or amount');
+    }
+
+    return this.rates[currency].sell * amount + this.sellFee;
   }
 }
