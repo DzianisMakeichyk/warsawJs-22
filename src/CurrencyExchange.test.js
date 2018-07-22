@@ -5,13 +5,13 @@ test('CurrencyExchange powinien byc klasa', () => {
 });
 
 describe('getCurrencyList', () => {
-  test('getCurrencyList jyst funkcja', () => {
+  test('jest funkcja', () => {
   const exchange = new CurrencyExchange(['USD', 'EUR', 'GBP'])
 
     expect(typeof exchange.getCurrencyList).toEqual('function')
   });
 
-  test('CurrencyExchange.getCurrencyList zwraca liste walut', () => {
+  test('zwraca liste walut', () => {
     const exchange = new CurrencyExchange(['USD', 'EUR', 'GBP'])
 
     expect(exchange.getCurrencyList()).toEqual(['USD', 'EUR', 'GBP'])
